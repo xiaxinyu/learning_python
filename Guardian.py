@@ -7,10 +7,10 @@ Created on 2018.1.5
 import pickle
 
 try:
-    with open('readme.txt', 'wb') as mysavedata:
+    with open('Guardian\\readme.txt', 'wb') as mysavedata:
         pickle._dump([1, 2, 'three'], mysavedata)
     
-    with open('readme.txt', 'rb') as myrestoredata:
+    with open('Guardian\\readme.txt', 'rb') as myrestoredata:
         a_list = pickle.load(myrestoredata)
     print(a_list)
 except IOError as err:
