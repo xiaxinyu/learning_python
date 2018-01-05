@@ -1,4 +1,9 @@
-"""read file"""
+'''
+Created on 2018年1月5日
+
+@author: summer.xia
+@contact: summer_west2010@126.com
+'''
 import os
 import logging
 import codecs
