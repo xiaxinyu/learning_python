@@ -54,10 +54,11 @@ def readFile(fi):
         for each_line in file:
             rows.append(each_line.strip())
         return TextItem(fi.fn, rows)
-    except:
-        logging.exception('Reading file has error.')
+    except Exception as e:
+        logging.exception('Reading file has error. [' +  str(e) +']')
     finally:
-        file.close()
+        if 'file' in locals():
+            file.close() 
     return None
 
     
@@ -78,10 +79,11 @@ def joinFiles(path, txtObjs, showFn=True):
                 file.write(l.h + ':' + l.text+'\r\n')
             else:
                 file.write(l.text+'\r\n')
-    except:
-        print('Reading file has error.')
-    finally:
-        file.close()     
+    except Exception as e:
+        logging.exception('Reading file has error. [' +  str(e) +']')
+    finally :
+        if 'file' in locals():
+            file.close()     
 
         
 def merge(sp, dp, showFn):
