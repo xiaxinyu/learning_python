@@ -5,7 +5,6 @@ Created on 2018.1.5
 @contact: summer_west2010@126.com
 '''
 import os
-from test.test_decimal import file
 
 
 def sanitize(time):
@@ -18,20 +17,22 @@ def sanitize(time):
     (mins, secs) = time.split(splitter)
     return mins + '.' + secs
 
+
+class AtheleteList(list):
+
+    def __init__(self, name, times=[]):
+        list.__init__([])
+        self.name = name
+        self.extend(times)
     
-def getSourceData(p):
+    def top3(self):
+        return sorted(set([sanitize(t) for t in self]))[0:3]
+
+      
+def getSourceData(n, p):
     with open(p) as d:
         data = d.readline()
-    return data.strip().split(',')
-
-
-def eliminateRepetition(items):
-    result = []
-    for item in items:
-        c_item = sanitize(item);
-        if c_item not in result:
-            result.append(c_item)
-    return result
+    return AtheleteList(n, data.strip().split(','))
 
 
 def report(aps, items):
@@ -49,18 +50,14 @@ def report(aps, items):
 
         
 if __name__ == '__main__':      
-    charles = getSourceData('Sorter/charles.txt')
-    james = getSourceData('Sorter/james.txt')
-    ray = getSourceData('Sorter/ray.txt')
-    summer = getSourceData('Sorter/summer.txt')    
-    c_charles = eliminateRepetition(charles)
-    c_james = eliminateRepetition(james)
-    c_ray = eliminateRepetition(ray)
-    c_summer = eliminateRepetition(summer)    
+    charles = getSourceData('charles', 'Sorter/charles.txt')
+    james = getSourceData('james', 'Sorter/james.txt')
+    ray = getSourceData('ray', 'Sorter/ray.txt')
+    summer = getSourceData('summer', 'Sorter/summer.txt')
     r_all = {}
-    r_all['c_charles'] = sorted(c_charles[0:3])
-    r_all['c_james'] = sorted(c_james[0:3])
-    r_all['c_ray'] = sorted(c_ray[0:3])
-    r_all['c_summer'] = sorted(c_summer[0:3])
+    r_all[charles.name] = sorted(charles.top3())
+    r_all[james.name] = sorted(james.top3())
+    r_all[ray.name] = sorted(ray.top3())
+    r_all[summer.name] = sorted(summer.top3())
     report('Sorter/report.txt', r_all)
 
