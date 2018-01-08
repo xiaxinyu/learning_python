@@ -72,7 +72,7 @@ def getData(path):
 
 def getAthleteNames(path):
     data = getData(path)
-    return data.keys
+    return data.keys()
 
 def getDetail(path, name):
     data = getData(path)
@@ -90,5 +90,5 @@ if __name__ == '__main__':
     r_all[summer.name] = sorted(summer.top3())
     report(reportPath, r_all)
     save(savedPath, r_all)
-    print(str(getAthleteNames(savedPath)))
+    print(str(getData(savedPath)))
 
