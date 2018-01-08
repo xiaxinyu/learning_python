@@ -19,7 +19,6 @@ from django.conf.urls import url
 from .view import hello
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
     url(r'^$', hello),
     url(r'^hello$', hello),
 ]

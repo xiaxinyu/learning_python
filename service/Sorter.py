@@ -19,7 +19,7 @@ def sanitize(time):
     return mins + '.' + secs
 
 
-class AtheleteList(list):
+class AthleteList(list):
 
     def __init__(self, name, times=[]):
         list.__init__([])
@@ -33,7 +33,7 @@ class AtheleteList(list):
 def getSourceData(n, p):
     with open(p) as d:
         data = d.readline()
-    return AtheleteList(n, data.strip().split(','))
+    return AthleteList(n, data.strip().split(','))
 
 
 def report(aps, items):
