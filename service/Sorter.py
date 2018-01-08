@@ -5,6 +5,7 @@ Created on 2018.1.5
 @contact: summer_west2010@126.com
 '''
 import os
+import pickle
 
 
 def sanitize(time):
@@ -48,16 +49,27 @@ def report(aps, items):
         if 'file' in locals():
             file.close()
 
+
+def save(aps, items):
+    try:
+        if os.path.exists(aps):
+            os.remove(aps)
+        with open(aps, 'wb') as savedData:
+            pickle._dump(items, savedData)
+    except IOError as err:
+        print('File error:' + str(err))
+
         
 if __name__ == '__main__':      
-    charles = getSourceData('charles', 'Sorter/charles.txt')
-    james = getSourceData('james', 'Sorter/james.txt')
-    ray = getSourceData('ray', 'Sorter/ray.txt')
-    summer = getSourceData('summer', 'Sorter/summer.txt')
+    charles = getSourceData('charles', '..' + os.path.sep + 'Sorter' + os.path.sep + 'charles.txt')
+    james = getSourceData('james', '..' + os.path.sep + 'Sorter' + os.path.sep + 'james.txt')
+    ray = getSourceData('ray', '..' + os.path.sep + 'Sorter' + os.path.sep + 'ray.txt')
+    summer = getSourceData('summer', '..' + os.path.sep + 'Sorter' + os.path.sep + 'summer.txt')
     r_all = {}
     r_all[charles.name] = sorted(charles.top3())
     r_all[james.name] = sorted(james.top3())
     r_all[ray.name] = sorted(ray.top3())
     r_all[summer.name] = sorted(summer.top3())
-    report('Sorter/report.txt', r_all)
+    report('..' + os.path.sep + 'Sorter' + os.path.sep + 'report.txt', r_all)
+    save('..' + os.path.sep + 'Sorter' + os.path.sep + 'saved_report.txt', r_all)
 
