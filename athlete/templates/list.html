@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>List</title>
+</head>
+<body>
+{% for name in athleteNames %}
+    <a href="detail?name={{name}}">{{ name }}</a> <br>
+{% endfor %}
+</body>
+</html>

@@ -7,6 +7,8 @@ Created on 2018.1.5
 import os
 import pickle
 
+reportPath = '..' + os.path.sep + 'Sorter' + os.path.sep + 'report.txt'
+savedPath = '..' + os.path.sep + 'Sorter' + os.path.sep + 'saved_report.txt'
 
 def sanitize(time):
     if '-' in time:
@@ -58,7 +60,23 @@ def save(aps, items):
             pickle._dump(items, savedData)
     except IOError as err:
         print('File error:' + str(err))
+        
+def getData(path):
+    if not os.path.exists(path):
+        raise FileNotFoundError('can not find data file')
+    with open(path, 'rb') as savedData:
+        data = pickle.load(savedData)
+    if not data:
+        raise Exception('can not load anything')
+    return data;
 
+def getAthleteNames(path):
+    data = getData(path)
+    return data.keys
+
+def getDetail(path, name):
+    data = getData(path)
+    return data[name]
         
 if __name__ == '__main__':      
     charles = getSourceData('charles', '..' + os.path.sep + 'Sorter' + os.path.sep + 'charles.txt')
@@ -70,6 +88,7 @@ if __name__ == '__main__':
     r_all[james.name] = sorted(james.top3())
     r_all[ray.name] = sorted(ray.top3())
     r_all[summer.name] = sorted(summer.top3())
-    report('..' + os.path.sep + 'Sorter' + os.path.sep + 'report.txt', r_all)
-    save('..' + os.path.sep + 'Sorter' + os.path.sep + 'saved_report.txt', r_all)
+    report(reportPath, r_all)
+    save(savedPath, r_all)
+    print(str(getAthleteNames(savedPath)))
 
