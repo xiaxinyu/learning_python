@@ -36,7 +36,7 @@ def getAllLines(absolutePath, encoding):
         if len(texts) <= 0:
             return None
         for text in texts:
-            line = text.strip().replace('\r\n', '').replace('\n', '')
+            line = text.strip().replace('\r', '').replace('\n', '')
             if len(line) > 0:
                 lines.append(line)
     except Exception as e:
