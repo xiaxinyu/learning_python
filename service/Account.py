@@ -6,12 +6,13 @@ Created on 2018.1.10
 '''
 from service.FileHelper import getFiles
 from service.FileHelper import getAllLines
+from service.FileHelper import generateFile
 import os
 import json
 import codecs
 
-# directoryPath = '/Users/summer/Desktop/account'
-directoryPath = 'd:\\test'
+directoryPath = '/Users/summer/Desktop/account'
+# directoryPath = 'd:\\test'
 encoding = 'utf-8'
 filterHeaderKeyWord = '交易明细'
 spliter = ' '
@@ -134,17 +135,21 @@ def cleanSpecialWordDataLines():
     return correctMap
 
 
-class AccountAnalyzer(object):
+class CreditAccountAnalyzer(object):
     dcPath = os.path.join(BASE_DIR, 'Account' + os.path.sep + 'disbursement-channels.json')
     touPath = os.path.join(BASE_DIR, 'Account' + os.path.sep + 'type-of-use.json')
     descriptionColumnIndex = 5
-    headerRowIndex = 0    
+    headerRowIndex = 0 
+    disbursementNewColumn1 = "支付渠道名称"
+    disbursementNewColumn2 = "支付渠道编码" 
+    typeOfUseNewColumn1 = "使用类型名称"
+    typeOfUseNewColumn2 = "使用类型编码" 
     
     def __init__(self, lines=[]):
         self.lines = lines
         self.dcData = self.listOrdinaryType(self.dcPath)
         self.touData = self.listOrdinaryType(self.touPath)
-        
+         
     def listOrdinaryType(self, path):
         with codecs.open(path, 'r', encoding) as json_file:
             data = json.load(json_file)
@@ -165,21 +170,40 @@ class AccountAnalyzer(object):
                 break
         return result
     
-    def calculate(self):
-        if len(self.lines) <= 0:
+    def calculate(self, lines=[]):
+        if len(lines) <= 0:
             return None
-        for index, line in enumerate(self.lines):
+        for index, line in enumerate(lines):
             if index == self.headerRowIndex:
+                line.append(self.disbursementNewColumn1)
+                line.append(self.disbursementNewColumn2)
+                line.append(self.typeOfUseNewColumn1)
+                line.append(self.typeOfUseNewColumn2)
                 continue
+            if line is None:
+                continue 
             description = line[self.descriptionColumnIndex]
-            print(self.getOrdinaryType(description, self.dcData)) 
+            dc = self.getOrdinaryType(description, self.dcData)
+            line.append(dc['name'])
+            line.append(dc['value'])
+            tou = self.getOrdinaryType(description, self.touData)
+            line.append(tou['name'])
+            line.append(tou['value'])
+        return lines
 
 
+class Account(object):
+
+    def generateDataFile(self, path):
+        data = cleanSpecialWordDataLines()
+        analyzer = CreditAccountAnalyzer()
+        result = []
+        for key in data.keys():
+            lines = data[key]
+            result = result + analyzer.calculate(lines)
+        generateFile(result, path)
+        
+        
 if __name__ == '__main__':  
-    data = cleanSpecialWordDataLines()
-    lines = data['2017-03-05.txt']
-    a = AccountAnalyzer(lines)
-    print(a.getOrdinaryType('支付宝(中国)网络技术有限公司', a.listOrdinaryType(a.dcPath)))
-    print(a.listOrdinaryType(a.touPath))
-    print(a.calculate())
-
+    a = Account()
+    a.generateDataFile('/Users/summer/Desktop/account.txt')

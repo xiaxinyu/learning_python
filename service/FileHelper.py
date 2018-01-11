@@ -26,7 +26,7 @@ def getFiles(directoryPath):
     return items
 
 
-def getAllLines(absolutePath, encoding):
+def getAllLines(absolutePath, encoding='utf-8'):
     if not os.path.exists(absolutePath):
         return None
     lines = []
@@ -45,3 +45,21 @@ def getAllLines(absolutePath, encoding):
         if 'file' in locals():
             file.close()
     return lines
+
+
+def generateFile(lines, path, encoding='utf-8'):
+    try:
+        if lines is None or len(lines) <= 0:
+            print('No available data can be exported to file')
+            return 
+        if os.path.exists(path):
+            os.remove(path)
+        
+        file = codecs.open(path, 'w', encoding)   
+        for line in lines:
+            file.write(str(line) + '\n')
+    except Exception as e:
+            print('Generating file has error. message [' + str(e) + ']')
+    finally :
+        if 'file' in locals():
+            file.close()     
