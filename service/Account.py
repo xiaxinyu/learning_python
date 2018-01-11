@@ -6,12 +6,17 @@ Created on 2018.1.10
 '''
 from service.FileHelper import getFiles
 from service.FileHelper import getAllLines
+import os
+import json
+import codecs
 
-directoryPath = '/Users/summer/Desktop/account'
+# directoryPath = '/Users/summer/Desktop/account'
+directoryPath = 'd:\\test'
 encoding = 'utf-8'
 filterHeaderKeyWord = '交易明细'
 spliter = ' '
 filterDataKeyWords = ['CNY/', '人民币/']
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def isNotEmpty(charactor):   
@@ -104,7 +109,7 @@ def correctDataLinesLength():
 
 
 def cleanSpecialWordDataLines():
-    originalMap = getAllDataLines()
+    originalMap = correctDataLinesLength()
     if not originalMap:
         print("Not map data is available")
     correctMap = {}
@@ -129,6 +134,51 @@ def cleanSpecialWordDataLines():
     return correctMap
 
 
+class AccountAnalyzer(object):
+    dcPath = os.path.join(BASE_DIR, 'Account' + os.path.sep + 'disbursement-channels.json')
+    touPath = os.path.join(BASE_DIR, 'Account' + os.path.sep + 'type-of-use.json')
+    descriptionColumnIndex = 5
+    headerRowIndex = 0    
+    
+    def __init__(self, lines=[]):
+        self.lines = lines
+        self.dcData = self.listOrdinaryType(self.dcPath)
+        self.touData = self.listOrdinaryType(self.touPath)
+        
+    def listOrdinaryType(self, path):
+        with codecs.open(path, 'r', encoding) as json_file:
+            data = json.load(json_file)
+        defaultRow = None
+        for i, row in enumerate(data):
+            if i == 0:
+                defaultRow = row
+            if row['default']:
+                defaultRow = row
+                break
+        return {"default":defaultRow, "rows":data}
+    
+    def getOrdinaryType(self, text, data):
+        result = data['default']
+        for key in data['rows']:
+            if key["name"] in text:
+                result = key
+                break
+        return result
+    
+    def calculate(self):
+        if len(self.lines) <= 0:
+            return None
+        for index,line in enumerate(self.lines):
+            if index == self.headerRowIndex:
+                continue
+            description = line[self.descriptionColumnIndex]
+            print(self.getOrdinaryType(description, self.dcData)) 
+
 if __name__ == '__main__':  
-    print(cleanSpecialWordDataLines())
+    data = cleanSpecialWordDataLines()
+    lines = data['2017-03-05.txt']
+    a = AccountAnalyzer(lines)
+    print(a.getOrdinaryType('支付宝(中国)网络技术有限公司', a.listOrdinaryType(a.dcPath)))
+    print(a.listOrdinaryType(a.touPath))
+    print(a.calculate())
 

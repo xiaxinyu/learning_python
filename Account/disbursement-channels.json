@@ -1,0 +1,17 @@
+[
+	{
+		"name": "支付宝",
+		"value": "Alipay",
+		"default": false
+	},
+	{
+		"name": "财富通",
+		"value": "Wechat",
+		"default": false
+	},
+	{
+		"name": "银联",
+		"value": "BankAccount",
+		"default": true
+	}
+]
