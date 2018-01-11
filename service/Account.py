@@ -89,7 +89,7 @@ def correctDataLinesLength():
                     newRow = []
                     mergeStr = ''
                     for i, val in enumerate(row):
-                        if (i + 1) >= lenHeader:
+                        if (i + 1) >= lenHeader and (i + 1) < lenData:
                             mergeStr += val + ' '
                         elif (i + 1) == lenData:
                             mergeStr += val
@@ -168,11 +168,12 @@ class AccountAnalyzer(object):
     def calculate(self):
         if len(self.lines) <= 0:
             return None
-        for index,line in enumerate(self.lines):
+        for index, line in enumerate(self.lines):
             if index == self.headerRowIndex:
                 continue
             description = line[self.descriptionColumnIndex]
             print(self.getOrdinaryType(description, self.dcData)) 
+
 
 if __name__ == '__main__':  
     data = cleanSpecialWordDataLines()
