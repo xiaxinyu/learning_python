@@ -1,0 +1,42 @@
+[
+	{
+		"name": "支付宝",
+		"value": "Alipay",
+		"default": false
+	},
+	{
+		"name": "财付通",
+		"value": "Wechat",
+		"default": false
+	},
+	{
+		"name": "微信",
+		"value": "Wechat",
+		"default": false
+	},
+	{
+		"name": "微信支付",
+		"value": "Wechat",
+		"default": false
+	},
+	{
+		"name": "银行",
+		"value": "BankAccount",
+		"default": true
+	},
+	{
+		"name": "网银在线",
+		"value": "BankAccount",
+		"default": false
+	},
+	{
+		"name": "网银",
+		"value": "BankAccount",
+		"default": false
+	},
+	{
+		"name": "银联",
+		"value": "BankAccount",
+		"default": false
+	}
+]
