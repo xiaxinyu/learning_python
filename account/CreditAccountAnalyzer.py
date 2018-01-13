@@ -23,6 +23,7 @@ class CreditAccountAnalyzer(object):
     typeOfUseNewColumn2 = '使用类型编码' 
     consumptionNewColumn1 = '消费类型名称'
     consumptionNewColumn2 = '消费类型编码'
+    keywordNewColumn1 = '关键字'
     
     def __init__(self, lines=[]):
         self.lines = lines
@@ -69,12 +70,15 @@ class CreditAccountAnalyzer(object):
     
     def getConsumptionType(self, text, data):
         result = data['default']
+        if result is not None:
+            result['keyword'] = result['name']
         for row in data['rows']:
             if row.get('keyWords') is None:
                 continue
             matchFlag = False
             for keyWord in row['keyWords']:
                 if keyWord in text:
+                    row['keyword'] = keyWord
                     result = row
                     matchFlag = True
                     break
@@ -93,6 +97,7 @@ class CreditAccountAnalyzer(object):
                 line.append(self.typeOfUseNewColumn2)
                 line.append(self.consumptionNewColumn1)
                 line.append(self.consumptionNewColumn2)
+                line.append(self.keywordNewColumn1)
                 continue
             if line is None:
                 continue 
@@ -107,8 +112,8 @@ class CreditAccountAnalyzer(object):
             if ct is not None:
                 line.append(ct['name'])
                 line.append(ct['value'])
+                line.append(ct['keyword'])
         return lines
-
 
 # if __name__ == '__main__':
 #     a = CreditAccountAnalyzer()
