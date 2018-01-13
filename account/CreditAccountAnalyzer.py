@@ -8,13 +8,13 @@ import os
 import json
 import codecs
 
-encoding = 'utf-8'
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 class CreditAccountAnalyzer(object):
+    encoding = 'utf-8'
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     dcPath = os.path.join(BASE_DIR, 'account' + os.path.sep + 'static' + os.path.sep + 'disbursement-channels.json')
     touPath = os.path.join(BASE_DIR, 'account' + os.path.sep + 'static' + os.path.sep + 'type-of-use.json')
+    ctPath = os.path.join(BASE_DIR, 'account' + os.path.sep + 'static' + os.path.sep + 'consume-type.json')
     descriptionColumnIndex = 5
     headerRowIndex = 0 
     disbursementNewColumn1 = "支付渠道名称"
@@ -26,10 +26,14 @@ class CreditAccountAnalyzer(object):
         self.lines = lines
         self.dcData = self.listOrdinaryType(self.dcPath)
         self.touData = self.listOrdinaryType(self.touPath)
-         
-    def listOrdinaryType(self, path):
-        with codecs.open(path, 'r', encoding) as json_file:
+        
+    def readDictionaryData(self, path):
+        with codecs.open(path, 'r', self.encoding) as json_file:
             data = json.load(json_file)
+        return data
+    
+    def listOrdinaryType(self, path):
+        data = self.readDictionaryData(path)
         defaultRow = None
         for i, row in enumerate(data):
             if i == 0:
@@ -38,6 +42,10 @@ class CreditAccountAnalyzer(object):
                 defaultRow = row
                 break
         return {"default":defaultRow, "rows":data}
+    
+    def listConsumptionType(self, path):
+        data = self.readDictionaryData(path)
+        print(str(data))
     
     def getOrdinaryType(self, text, data):
         result = data['default']
@@ -67,3 +75,7 @@ class CreditAccountAnalyzer(object):
             line.append(tou['name'])
             line.append(tou['value'])
         return lines
+
+if __name__ == '__main__':
+    a = CreditAccountAnalyzer()
+    a.listConsumptionType(a.ctPath)

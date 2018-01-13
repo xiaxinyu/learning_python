@@ -30,8 +30,9 @@ class Account(object):
         
         
 if __name__ == '__main__':
-    # directoryPath = '/Users/summer/Desktop/account'
-    dataFilesPath = 'd:\\test'
-    resultFilePath = 'd://account.txt'
+    dataFilesPath = '/Users/summer/Desktop/account'
+    #dataFilesPath = 'd:\\test'
+    #resultFilePath = 'd://account.txt'
+    resultFilePath = '/Users/summer/Desktop/account.txt'
     a = Account(dataFilesPath, resultFilePath)
     a.generateDataFile()
