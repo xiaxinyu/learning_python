@@ -15,7 +15,7 @@ class CreditAccountAnalyzer(object):
     dcPath = os.path.join(BASE_DIR, 'account' + os.path.sep + 'static' + os.path.sep + 'disbursement-channels.json')
     touPath = os.path.join(BASE_DIR, 'account' + os.path.sep + 'static' + os.path.sep + 'type-of-use.json')
     ctPath = os.path.join(BASE_DIR, 'account' + os.path.sep + 'static' + os.path.sep + 'consumption-type.json')
-    descriptionColumnIndex = 5
+    descriptionColumnIndex = 6
     headerRowIndex = 0 
     disbursementNewColumn1 = '支付渠道名称'
     disbursementNewColumn2 = '支付渠道编码' 

@@ -5,6 +5,8 @@ Created on 2018.1.12
 @contact: summer_west2010@126.com
 '''
 from account.StringHelper import isNotEmpty
+from account.StringHelper import parseDate
+from account.StringHelper import formatDateTime
 from account.FileHelper import getFiles
 from account.FileHelper import getAllLines
 
@@ -13,6 +15,8 @@ class CreditAccountCleaner(object):
     filterHeaderKeyWord = '交易明细'
     spliter = ' '
     filterDataKeyWords = ['CNY/']
+    transactionDateIndex = 0
+    recordDateIndex = 1
     currencyIndex = 4
     currencySpliter = '/'
     descriptionSpliter = ' '
@@ -96,8 +100,11 @@ class CreditAccountCleaner(object):
     
     def filterRowData(self, rowData):
         newRows = []
-        for column in rowData:
-            newRows.append(self.filterSpecialWord(column))
+        for index, column in enumerate(rowData):
+            if index == self.transactionDateIndex or index == self.recordDateIndex:
+                newRows.append(formatDateTime(parseDate(column)))
+            else:
+                newRows.append(self.filterSpecialWord(column))
         return newRows
     
     def clean(self):
@@ -110,7 +117,9 @@ class CreditAccountCleaner(object):
             for (index, row) in enumerate(v):
                 correctRow = row
                 if index == 0:                 
-                    lenHeader = len(row)                   
+                    lenHeader = len(correctRow)
+                    correctRows.append(correctRow)
+                    continue                
                 else:
                     lenData = len(row)                    
                     if lenData > lenHeader:

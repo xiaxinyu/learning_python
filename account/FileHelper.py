@@ -23,7 +23,7 @@ def getText(absolutePath, encoding='utf-8'):
         lines = f.readlines()
         if len(lines) <= 0:
             return None
-        texts = None
+        texts = ''
         for line in lines:
             texts = texts + line.strip()
         return texts
@@ -32,6 +32,7 @@ def getText(absolutePath, encoding='utf-8'):
     finally:
         if 'f' in locals():
             f.close()
+    return None
 
     
 def getFiles(directoryPath):

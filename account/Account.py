@@ -7,7 +7,9 @@ Created on 2018.1.10
 from account.FileHelper import generateFile
 from account.CreditAccountAnalyzer import CreditAccountAnalyzer
 from account.CreditAccountCleaner import CreditAccountCleaner
+from account.SQLiteHelper import SQLiteHelper
 import os
+
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -25,8 +27,12 @@ class Account(object):
         cleanMap = {}        
         for key in originalData.keys():
             cleanMap[key] = analyzer.calculate(originalData[key])
-        result = cleaner.cleanNeedlessHeader(cleanMap) 
+        result = cleaner.cleanNeedlessHeader(cleanMap)
         generateFile(result, self.resultFilePath)
+        '''save data to SQLite'''
+        sqliteHelper = SQLiteHelper()
+        sqliteHelper.initiateDatabase()
+        sqliteHelper.batchInsert(result[1: len(result)])
         
         
 if __name__ == '__main__':

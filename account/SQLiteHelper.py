@@ -10,26 +10,23 @@ from account.FileHelper import getText
 
 
 class SQLiteHelper(object):
-    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + 'account' + os.path.sep + 'static' + os.path.sep
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + os.path.sep + 'account' + os.path.sep + 'static' + os.path.sep
     createPath = os.path.join(BASE_DIR, 'create_table_sqlite.sql')
-    insertPath = os.path.join(BASE_DIR, 'create_rowdata_sqlite.sql')
+    insertPath = os.path.join(BASE_DIR, 'insert_table_sqlite.sql')
     databasePath = os.path.join(BASE_DIR, 'account.sqlite')
     
-    def __init__(self, dataSet):
-        print(dataSet)
-
     def removeDatabase(self, path):
         if os.path.exists(path):
             os.remove(path)
     
     def initiateDatabase(self):
-        self.removeDatabaseFile(self.databasePath)
+        self.removeDatabase(self.databasePath)
         conn = sqlite3.connect(self.databasePath)
         scripts = getText(self.createPath)
         if scripts:
             conn.execute(scripts)
             conn.commit()
-            print('Table created successfully')
+            print('Table create successfully')
         else:
             print('DB scripts is not available')
         conn.close()
@@ -38,12 +35,10 @@ class SQLiteHelper(object):
         if columns is None or len(columns) <= 0:
             print('Columns are not available')
             return
-       
-        insertScript = scripts % (columns['name'], columns['time'])
+        insertScript = scripts % (columns[0], columns[1], columns[2], columns[3], columns[4], columns[5], columns[6], columns[7], columns[8], columns[9], columns[10], columns[11], columns[12], columns[13])
         conn.execute(insertScript)
-        print('Table created successfully')
     
-    def batchInsertAthleteGrade(self, dataRows):
+    def batchInsert(self, dataRows):
         if not dataRows or len(dataRows) <= 0:
             print('Row data are not available')
             return
@@ -54,5 +49,6 @@ class SQLiteHelper(object):
                 self.insertRow(conn, scripts, dataRow)
             conn.commit() 
             conn.close()
+            print('DataRows create successfully')
         else:
             print('Insert script is not available')
