@@ -1,0 +1,23 @@
+CREATE TABLE CREDIT( 
+  id               INTEGER   PRIMARY KEY autoincrement,
+  card_id          TEXT      NOT NULL,
+  transaction_date DATETIME  NOT NULL,
+  bookkeeping_date DATETIME  NOT NULL,
+  transaction_desc TEXT      NOT NULL,
+  balance_currency TEXT      NOT NULL,
+  balance_money    NUMERIC   NOT NULL default 0,
+  card_type_id     INTEGER   NOT NULL,
+  card_type_name   TEXT      NOT NULL,
+  deleted          INTEGER   NOT NULL default 0,
+  consumption_type INTEGER   NOT NULL,
+  consume_id       TEXT      NOT NULL,
+  consume_name     TEXT      NOT NULL,
+  demoarea         TEXT      NOT NULL,
+  recordid         TEXT      default 'no record id',
+  payment_type_id  TEXT      NOT NULL,
+  version          INTEGER   default 0,
+  createuser       TEXT      default 'system',
+  createtime       DATETIME  default (datetime('now', 'localtime')),
+  updateuser       TEXT      default 'system',
+  updatetime       DATETIME  default (datetime('now', 'localtime'))
+);

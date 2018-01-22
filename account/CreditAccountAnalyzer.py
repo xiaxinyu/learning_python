@@ -114,7 +114,3 @@ class CreditAccountAnalyzer(object):
                 line.append(ct['value'])
                 line.append(ct['keyword'])
         return lines
-
-# if __name__ == '__main__':
-#     a = CreditAccountAnalyzer()
-#     a.listConsumptionType(a.ctPath)

@@ -14,6 +14,25 @@ class FileItem(object):
         self.fileName = fileName
         self.absolutePath = absolutePath
 
+
+def getText(absolutePath, encoding='utf-8'):
+    try:
+        if not os.path.exists(absolutePath):
+            return None
+        f = codecs.open(absolutePath, 'r', encoding)
+        lines = f.readlines()
+        if len(lines) <= 0:
+            return None
+        texts = None
+        for line in lines:
+            texts = texts + line.strip()
+        return texts
+    except Exception as e:
+        print('Reading text fail, message=' + str(e))
+    finally:
+        if 'f' in locals():
+            f.close()
+
     
 def getFiles(directoryPath):
     files = os.listdir(directoryPath)

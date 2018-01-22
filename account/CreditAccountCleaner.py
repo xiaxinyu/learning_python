@@ -10,26 +10,15 @@ from account.FileHelper import getAllLines
 
 
 class CreditAccountCleaner(object):
-    encoding = 'utf-8'
     filterHeaderKeyWord = '交易明细'
     spliter = ' '
-    filterDataKeyWords = ['CNY/', '人民币/']
+    filterDataKeyWords = ['CNY/']
+    currencyIndex = 4
+    currencySpliter = '/'
+    descriptionSpliter = ' '
    
     def __init__(self, dataFilesPath=None):
         self.dataFilesPath = dataFilesPath
-    
-    def getAllDataLines(self):
-        fileItems = getFiles(self.dataFilesPath)
-        if not fileItems:
-            print('No data files are available')
-        texts = {}
-        for fileItem in fileItems:
-            lines = getAllLines(fileItem.absolutePath, self.encoding)
-            if lines is not None and len(lines) > 0:
-                dataLines = self.generateAccountMatrix(self.getDataLines(lines))
-                if len(dataLines) > 0:
-                    texts[fileItem.fileName] = dataLines
-        return texts
     
     def getDataLines(self, lines):
         if len(lines) < 0:
@@ -45,8 +34,8 @@ class CreditAccountCleaner(object):
             if self.filterHeaderKeyWord in line:
                 startFlag = True
         return dataLines
-
-    def  generateAccountMatrix(self, lines):
+    
+    def generateMatrix(self, lines):
         if len(lines) < 0:
             return None
         matrix = []
@@ -54,73 +43,97 @@ class CreditAccountCleaner(object):
             array = line.split(self.spliter)
             cleanArray1 = filter(isNotEmpty, array)
             cleanArray2 = []
-            for item in cleanArray1:
-                cleanArray2.append(item.strip())
+            for (index, item) in enumerate(cleanArray1):
+                if index == self.currencyIndex:
+                    ''' get currency by splitting word '''
+                    currencyItems = item.split(self.currencySpliter)
+                    cleanArray2.append(currencyItems[0])
+                    cleanArray2.append(currencyItems[1])
+                else:
+                    cleanArray2.append(item.strip())
             matrix.append(cleanArray2)
         return matrix
     
-
-    def correctDataLinesLength(self):
+    def getAllDataLines(self):
+        fileItems = getFiles(self.dataFilesPath)
+        if not fileItems:
+            print('No data files are available')
+        texts = {}
+        for fileItem in fileItems:
+            lines = getAllLines(fileItem.absolutePath)
+            if lines is None or len(lines) <= 0:
+                continue                
+            dataLines = self.generateMatrix(self.getDataLines(lines))
+            if len(dataLines) <= 0:                continue
+            
+            texts[fileItem.fileName] = dataLines
+        return texts
+    
+    def correctOverLengthRow(self, oldRow, lenHeader, lenData):
+        newRow = []
+        mergeStr = ''
+        for i, val in enumerate(oldRow):
+            position = (i + 1)
+            if  position >= lenHeader and position < lenData:
+                mergeStr += val + self.descriptionSpliter
+            elif position == lenData:
+                mergeStr += val
+                newRow.append(mergeStr)
+            else:
+                newRow.append(val)
+        return newRow
+    
+    def filterSpecialWord(self, column):
+        newColumn = column
+        inFlag = False
+        for filterKeyWord in self.filterDataKeyWords:
+            if filterKeyWord in column:
+                inFlag = True
+        if inFlag:            
+            for filterKeyWord in self.filterDataKeyWords:
+                newColumn = newColumn.replace(filterKeyWord, '')
+        return newColumn
+    
+    def filterRowData(self, rowData):
+        newRows = []
+        for column in rowData:
+            newRows.append(self.filterSpecialWord(column))
+        return newRows
+    
+    def clean(self):
         originalMap = self.getAllDataLines()
         if not originalMap:
             print("Not map data is available")
         correctMap = {}
         for (k, v) in originalMap.items():
-            counter = 0
-            lenHeader = 0
             correctRows = []
-            for row in v:
-                if counter == 0: 
-                    '''add header'''
-                    lenHeader = len(row)
-                    correctRows.append(row)
+            for (index, row) in enumerate(v):
+                correctRow = row
+                if index == 0:                 
+                    lenHeader = len(row)                   
                 else:
-                    lenData = len(row)
-                    '''special row data'''
+                    lenData = len(row)                    
                     if lenData > lenHeader:
+                        ''' over long row data '''
                         print('before:' + str(row))
-                        newRow = []
-                        mergeStr = ''
-                        for i, val in enumerate(row):
-                            if (i + 1) >= lenHeader and (i + 1) < lenData:
-                                mergeStr += val + ' '
-                            elif (i + 1) == lenData:
-                                mergeStr += val
-                                newRow.append(mergeStr) 
-                            else:
-                                newRow.append(val)
-                        print('after:' + str(newRow))
-                    elif lenData == lenHeader:
-                        '''add ordinary row data'''
-                        correctRows.append(row)
-                    else:
+                        correctRow = self.correctOverLengthRow(row, lenHeader, lenData)
+                        print('after:' + str(correctRow))                       
+                    elif lenData < lenHeader:
                         '''error row data'''
-                        print('error row data:file_name=[' + k + '], row_data=' + row + ']')
-                counter = counter + 1
+                        print('error row data:file_name=[' + k + '], row_data=' + str(row) + ']')
+                correctRows.append(self.filterRowData(correctRow))
             correctMap[k] = correctRows
-        return correctMap   
-
-    def cleanSpecialWordDataLines(self):
-        originalMap = self.correctDataLinesLength()
+        return correctMap
+    
+    def cleanNeedlessHeader(self, originalMap):
         if not originalMap:
             print("Not map data is available")
-        correctMap = {}
-        for (fileName, rowDatas) in originalMap.items():
-            newRows = []
-            for rowData in rowDatas:
-                newRow = []
-                for column in rowData:
-                    inFlag = False
-                    for filterKeyWord in self.filterDataKeyWords:
-                        if filterKeyWord in column:
-                            inFlag = True
-                    if inFlag:
-                        newColumn = column
-                        for filterKeyWord in self.filterDataKeyWords:
-                            newColumn = newColumn.replace(filterKeyWord, '')
-                        newRow.append(newColumn)
-                    else:
-                        newRow.append(column)
-                newRows.append(newRow)
-            correctMap[fileName] = newRows       
-        return correctMap
+        result = []
+        counter = 0
+        for key in originalMap.keys():
+            finalRowDatas = originalMap[key]
+            if counter != 0 and len(finalRowDatas) > 1:
+                finalRowDatas = finalRowDatas[1: len(finalRowDatas)]
+            result = result + finalRowDatas
+            counter = counter + 1      
+        return result

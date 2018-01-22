@@ -20,19 +20,19 @@ class Account(object):
         
     def generateDataFile(self):
         cleaner = CreditAccountCleaner(self.dataFilesPath)
-        data = cleaner.cleanSpecialWordDataLines()
+        originalData = cleaner.clean()
         analyzer = CreditAccountAnalyzer()
-        result = []
-        for key in data.keys():
-            lines = data[key]
-            result = result + analyzer.calculate(lines)
+        cleanMap = {}        
+        for key in originalData.keys():
+            cleanMap[key] = analyzer.calculate(originalData[key])
+        result = cleaner.cleanNeedlessHeader(cleanMap) 
         generateFile(result, self.resultFilePath)
         
         
 if __name__ == '__main__':
-    dataFilesPath = '/Users/summer/Desktop/account'
-    #dataFilesPath = 'd:\\test'
-    #resultFilePath = 'd://account.txt'
-    resultFilePath = '/Users/summer/Desktop/account.txt'
+#     dataFilesPath = '/Users/summer/Desktop/account'
+    dataFilesPath = 'd:\\test'
+    resultFilePath = 'd://account.txt'
+#     resultFilePath = '/Users/summer/Desktop/account.txt'
     a = Account(dataFilesPath, resultFilePath)
     a.generateDataFile()
