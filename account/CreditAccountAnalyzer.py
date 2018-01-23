@@ -7,14 +7,15 @@ Created on 2018.1.12
 import os
 import json
 import codecs
+from account.ConsumptionAnalyzer import ConsumptionAnalyzer
 
 
 class CreditAccountAnalyzer(object):
     encoding = 'utf-8'
-    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    dcPath = os.path.join(BASE_DIR, 'account' + os.path.sep + 'static' + os.path.sep + 'disbursement-channels.json')
-    touPath = os.path.join(BASE_DIR, 'account' + os.path.sep + 'static' + os.path.sep + 'type-of-use.json')
-    ctPath = os.path.join(BASE_DIR, 'account' + os.path.sep + 'static' + os.path.sep + 'consumption-type.json')
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + os.path.sep + 'account' + os.path.sep + 'static' + os.path.sep;
+    dcPath = os.path.join(BASE_DIR, 'disbursement-channels.json')
+    touPath = os.path.join(BASE_DIR, 'type-of-use.json')
+    ctPath = os.path.join(BASE_DIR, 'consumption-type.json')
     descriptionColumnIndex = 6
     headerRowIndex = 0 
     disbursementNewColumn1 = '支付渠道名称'
@@ -29,7 +30,7 @@ class CreditAccountAnalyzer(object):
         self.lines = lines
         self.dcData = self.listOrdinaryType(self.dcPath)
         self.touData = self.listOrdinaryType(self.touPath)
-        self.ctData = self.listConsumptionType(self.ctPath)
+        self.consumptionAnalyzer = ConsumptionAnalyzer()     
         
     def readDictionaryData(self, path):
         with codecs.open(path, 'r', self.encoding) as json_file:
@@ -47,42 +48,11 @@ class CreditAccountAnalyzer(object):
                 break
         return {'default':defaultRow, 'rows':data}
     
-    def listConsumptionType(self, path):
-        data = self.readDictionaryData(path)
-        rowData = None
-        allData = []
-        for firstNode in data:
-            allData = allData + firstNode['children']
-            for secondNode in firstNode['children'] :
-                if secondNode.get('default') is not None:
-                    if secondNode['default']:
-                        rowData = secondNode
-                        break
-        return {'default':rowData, 'rows':allData}
-    
     def getOrdinaryType(self, text, data):
         result = data['default']
         for key in data['rows']:
             if key["name"] in text:
                 result = key
-                break
-        return result
-    
-    def getConsumptionType(self, text, data):
-        result = data['default']
-        if result is not None:
-            result['keyword'] = result['name']
-        for row in data['rows']:
-            if row.get('keyWords') is None:
-                continue
-            matchFlag = False
-            for keyWord in row['keyWords']:
-                if keyWord in text:
-                    row['keyword'] = keyWord
-                    result = row
-                    matchFlag = True
-                    break
-            if matchFlag:
                 break
         return result
     
@@ -108,7 +78,7 @@ class CreditAccountAnalyzer(object):
             tou = self.getOrdinaryType(description, self.touData)
             line.append(tou['name'])
             line.append(tou['value'])
-            ct = self.getConsumptionType(description, self.ctData)
+            ct = self.consumptionAnalyzer.getConsumptionType(description)
             if ct is not None:
                 line.append(ct['name'])
                 line.append(ct['value'])
