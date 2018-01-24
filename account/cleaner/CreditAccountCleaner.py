@@ -20,6 +20,8 @@ class CreditAccountCleaner(object):
     currencyIndex = 4
     currencySpliter = '/'
     descriptionSpliter = ' '
+    moneyIndex1 = 3
+    moneyIndex2 = 5
    
     def __init__(self, dataFilesPath=None):
         self.dataFilesPath = dataFilesPath
@@ -103,11 +105,13 @@ class CreditAccountCleaner(object):
         for index, column in enumerate(rowData):
             if index == self.transactionDateIndex or index == self.recordDateIndex:
                 newRows.append(formatDateTime(parseDate(column)))
+            elif index == self.moneyIndex1 or index == self.moneyIndex2:
+                newRows.append(float(self.filterSpecialWord(column)))
             else:
                 newRows.append(self.filterSpecialWord(column))
         return newRows
     
-    def clean(self):
+    def correct(self):
         originalMap = self.getAllDataLines()
         if not originalMap:
             print("Not map data is available")
@@ -134,7 +138,8 @@ class CreditAccountCleaner(object):
             correctMap[k] = correctRows
         return correctMap
     
-    def cleanNeedlessHeader(self, originalMap):
+    def clean(self):
+        originalMap = self.correct()
         if not originalMap:
             print("Not map data is available")
         result = []

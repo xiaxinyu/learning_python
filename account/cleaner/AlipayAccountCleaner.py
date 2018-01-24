@@ -14,6 +14,7 @@ class AlipayAccountCleaner(object):
     filterHeadKeyWord = '交易记录明细列表'
     filterTailKeyWord = '-----------------------------------------'
     spliter = ','
+    moneyIndex = 9
     
     def __init__(self, dataFilesPath=None):
         self.dataFilesPath = dataFilesPath
@@ -56,8 +57,11 @@ class AlipayAccountCleaner(object):
             if len(array) >= headerLength:
                 cleanArray1 = array[0: headerLength]
                 cleanArray2 = []
-                for item in cleanArray1:
-                    cleanArray2.append(item.strip())
+                for (index, item) in enumerate(cleanArray1):
+                    if index == self.moneyIndex:
+                        cleanArray2.append(float(item.strip()))
+                    else:
+                        cleanArray2.append(item.strip())                        
                 matrix.append(cleanArray2)
             else:
                 print('error apliay row data, length:[ ' + str(len(array)) + ' ]: ' + str(line))
@@ -77,6 +81,20 @@ class AlipayAccountCleaner(object):
                 continue
             texts[fileItem.fileName] = dataLines
         return texts
+    
+    def clean(self):
+        originalMap = self.getAllDataLines()
+        if not originalMap:
+            print("Not map data is available")
+        result = []
+        counter = 0
+        for key in originalMap.keys():
+            finalRowDatas = originalMap[key]
+            if counter != 0 and len(finalRowDatas) > 1:
+                finalRowDatas = finalRowDatas[1: len(finalRowDatas)]
+            result = result + finalRowDatas
+            counter = counter + 1      
+        return result
     
     def checkLength(self, dataRows):
         error = []
