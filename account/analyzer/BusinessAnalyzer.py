@@ -7,12 +7,12 @@ Created on 2018.1.12
 import os
 import json
 import codecs
-from account.ConsumptionAnalyzer import ConsumptionAnalyzer
+from account.analyzer.ConsumptionAnalyzer import ConsumptionAnalyzer
 
 
-class CreditAccountAnalyzer(object):
+class BusinessAnalyzer(object):
     encoding = 'utf-8'
-    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + os.path.sep + 'account' + os.path.sep + 'static' + os.path.sep;
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + os.path.sep + 'static' + os.path.sep;
     dcPath = os.path.join(BASE_DIR, 'disbursement-channels.json')
     touPath = os.path.join(BASE_DIR, 'type-of-use.json')
     ctPath = os.path.join(BASE_DIR, 'consumption-type.json')

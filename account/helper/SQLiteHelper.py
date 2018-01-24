@@ -6,11 +6,11 @@ Created on 2018.1.17
 '''
 import os
 import sqlite3
-from account.FileHelper import getText 
+from account.helper.FileHelper import getText 
 
 
 class SQLiteHelper(object):
-    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + os.path.sep + 'account' + os.path.sep + 'static' + os.path.sep
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + os.path.sep + 'static' + os.path.sep
     createPath = os.path.join(BASE_DIR, 'create_table_sqlite.sql')
     insertPath = os.path.join(BASE_DIR, 'insert_table_sqlite.sql')
     databasePath = os.path.join(BASE_DIR, 'account.sqlite')

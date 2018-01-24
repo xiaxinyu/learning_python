@@ -4,10 +4,9 @@ Created on 2018.1.23
 @author: summer.xia
 @contact: summer_west2010@126.com
 '''
-from account.FileHelper import getFiles
-from account.FileHelper import getAllLines
-from account.StringHelper import isNotEmpty
-from account.FileHelper import generateFile
+from account.helper.FileHelper import getFiles
+from account.helper.FileHelper import getAllLines
+from account.helper.FileHelper import generateFile
 
 
 class AlipayAccountCleaner(object):
@@ -34,6 +33,14 @@ class AlipayAccountCleaner(object):
                 dataLines.append(line)
         return dataLines
     
+    def getCleanHeader(self, array):
+        cleanHeader = []
+        for header in array:
+            header = header.strip()
+            if header:
+                cleanHeader.append(header)
+        return cleanHeader
+                        
     def generateMatrix(self, lines):
         if len(lines) < 0:
             return None
@@ -42,15 +49,18 @@ class AlipayAccountCleaner(object):
         for (index, line) in enumerate(lines):
             array = line.split(self.spliter)
             if index == 0:
-                cleanHeader = filter(isNotEmpty,array)
+                cleanHeader = self.getCleanHeader(array)
                 headerLength = len(cleanHeader)
                 matrix.append(cleanHeader)
-            if(len())
-            cleanArray1 = array[0: headerLength]
-            cleanArray2 = []
-            for item in cleanArray1:
-                cleanArray2.append(item.strip())
-            matrix.append(cleanArray2)
+                continue
+            if len(array) >= headerLength:
+                cleanArray1 = array[0: headerLength]
+                cleanArray2 = []
+                for item in cleanArray1:
+                    cleanArray2.append(item.strip())
+                matrix.append(cleanArray2)
+            else:
+                print('error apliay row data, length:[ ' + str(len(array)) + ' ]: ' + str(line))
         return matrix
         
     def getAllDataLines(self):
@@ -63,8 +73,8 @@ class AlipayAccountCleaner(object):
             if lines is None or len(lines) <= 0:
                 continue                
             dataLines = self.generateMatrix(self.getDataLines(lines))
-            if len(dataLines) <= 0:                continue
-            
+            if len(dataLines) <= 0:                
+                continue
             texts[fileItem.fileName] = dataLines
         return texts
     

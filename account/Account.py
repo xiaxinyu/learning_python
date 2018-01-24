@@ -4,10 +4,10 @@ Created on 2018.1.10
 @author: summer.xia
 @contact: summer_west2010@126.com
 '''
-from account.FileHelper import generateFile
-from account.CreditAccountAnalyzer import CreditAccountAnalyzer
-from account.CreditAccountCleaner import CreditAccountCleaner
-from account.SQLiteHelper import SQLiteHelper
+from account.helper.FileHelper import generateFile
+from account.analyzer.BusinessAnalyzer import BusinessAnalyzer
+from account.cleaner.CreditAccountCleaner import CreditAccountCleaner
+from account.helper.SQLiteHelper import SQLiteHelper
 import os
 
 
@@ -23,7 +23,7 @@ class Account(object):
     def generateDataFile(self):
         cleaner = CreditAccountCleaner(self.dataFilesPath)
         originalData = cleaner.clean()
-        analyzer = CreditAccountAnalyzer()
+        analyzer = BusinessAnalyzer()
         cleanMap = {}        
         for key in originalData.keys():
             cleanMap[key] = analyzer.calculate(originalData[key])

@@ -11,7 +11,7 @@ import codecs
 
 class ConsumptionAnalyzer(object):
     encoding = 'utf-8'
-    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + os.path.sep + 'account' + os.path.sep + 'static' + os.path.sep
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + os.path.sep + 'static' + os.path.sep
     ctPath = os.path.join(BASE_DIR, 'consumption-type.json')
     
     def __init__(self):
