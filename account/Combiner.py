@@ -33,7 +33,7 @@ def combineCreditAndAlipay(creditMatrix, alipayMatrix):
         blanceMoney = credit[3]
         alipay = findRelatedAlipay(transDate, blanceMoney, alipayMatrix)        
         if alipay is not None:
-            row[6] = credit[6] + "@@" + alipay[8]        
+            row[6] = credit[6] + "@@" + alipay[7] + "@@" + alipay[8]        
         rows.append(row)
     return rows 
         
