@@ -11,7 +11,7 @@ from account.helper.FileHelper import getFiles
 from account.helper.FileHelper import getAllLines
 
 
-class CreditAccountCleaner(object):
+class CCBCreditCleaner(object):
     filterHeaderKeyWord = '交易明细'
     spliter = ' '
     filterDataKeyWords = ['CNY/']

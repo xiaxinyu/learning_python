@@ -6,7 +6,7 @@ Created on 2018.1.10
 '''
 from account.helper.FileHelper import generateFile
 from account.analyzer.BusinessAnalyzer import BusinessAnalyzer
-from account.cleaner.CreditAccountCleaner import CreditAccountCleaner
+from account.cleaner.CCBCreditCleaner import CCBCreditCleaner
 from account.cleaner.AlipayAccountCleaner import AlipayAccountCleaner
 from account.helper.SQLiteHelper import SQLiteHelper
 import os
@@ -23,7 +23,7 @@ class Account(object):
         self.resultFilePath = resultFilePath
         
     def generateDataFile(self):
-        creditCleaner = CreditAccountCleaner(self.dataFilesPath + os.path.sep + "credit")
+        creditCleaner = CCBCreditCleaner(self.dataFilesPath + os.path.sep + "credit")
         creditMatrix = creditCleaner.clean()
         generateFile(creditMatrix, self.resultFilePath + os.path.sep + "credit.txt")
         

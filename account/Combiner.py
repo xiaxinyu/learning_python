@@ -4,8 +4,6 @@ Created on 2018.1.24
 @author: summer.xia
 @contact: summer_west2010@126.com
 '''
-from account.cleaner.CreditAccountCleaner import CreditAccountCleaner
-
 dateSpliter = ' '
 
 def findRelatedAlipay(transData, blanceMoney, alipayMatrix):
