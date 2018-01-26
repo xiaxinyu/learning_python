@@ -14,7 +14,7 @@ def findRelatedAlipay(transData, blanceMoney, alipayMatrix):
             return alipay
     return None
     
-def combineCreditAndAlipay(creditMatrix, alipayMatrix):
+def combineCCBAndAlipay(creditMatrix, alipayMatrix):
     creditNone = False   
     if creditMatrix is None or len(creditMatrix) <= 0:
         creditNone = True 

@@ -13,7 +13,7 @@ from account.helper.StringHelper import formatDateTime
 import numpy as np
 
 
-class CCBCreditCleaner(Cleaner):
+class CCBDepositsCleaner(Cleaner):
     filterHeaderKeyWord = '记账日'
     filterAccountKeyWord = '账　　号'
     accountNumber = ''
@@ -109,7 +109,9 @@ class CCBCreditCleaner(Cleaner):
         for (index, digest) in enumerate(digests):
             if index == 0:
                 continue
-            digests[index] = locations[index] + "@@" + oppositeAccounts[index] + "@@" + oppisiteNames[index] + "@@" + digest
+            allStr = ''.join([locations[index],"@@",oppositeAccounts[index],"@@",oppisiteNames[index],"@@",digest])
+            print(allStr)
+            digests[index] = allStr
         return digests
             
     def clean(self):
@@ -126,9 +128,4 @@ class CCBCreditCleaner(Cleaner):
         c_g = self.formatDigest(array[:, 3], array[:, 7], array[:, 8], array[:, 10])
         result = np.c_[c_a, c_b, c_c, c_d, c_e, c_f, c_g]
         return result.tolist()
-        
-    
-cleaner = CCBCreditCleaner("d:\\test\\deposits")
-result = cleaner.clean()
-generateFile(result, "d:\\result\\deposits.txt")
 

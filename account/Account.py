@@ -7,10 +7,13 @@ Created on 2018.1.10
 from account.helper.FileHelper import generateFile
 from account.analyzer.BusinessAnalyzer import BusinessAnalyzer
 from account.cleaner.CCBCreditCleaner import CCBCreditCleaner
+from account.cleaner.CCBDepositsCleaner import CCBDepositsCleaner
 from account.cleaner.AlipayAccountCleaner import AlipayAccountCleaner
-from account.helper.SQLiteHelper import SQLiteHelper
+from account.db.SQLiteHelper import SQLiteHelper
 import os
-from account.Combiner import combineCreditAndAlipay
+from account.Combiner import combineCCBAndAlipay
+from account.helper.MatrixHelper import addPointedColumn
+from account.helper.MatrixHelper import mergeMatrixsAandB
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -23,21 +26,31 @@ class Account(object):
         self.resultFilePath = resultFilePath
         
     def generateDataFile(self):
-        creditCleaner = CCBCreditCleaner(self.dataFilesPath + os.path.sep + "credit")
-        creditMatrix = creditCleaner.clean()
-        generateFile(creditMatrix, self.resultFilePath + os.path.sep + "credit.txt")
+        ccbCreditCleaner = CCBCreditCleaner(self.dataFilesPath + os.path.sep + "credit")
+        ccbCreditMatrix = ccbCreditCleaner.clean()
+        generateFile(ccbCreditMatrix, self.resultFilePath + os.path.sep + "credit.txt")
+        
+        ccbDepositesCleaner = CCBDepositsCleaner(self.dataFilesPath + os.path.sep + "deposits")
+        ccbDepositesMatrix = ccbDepositesCleaner.clean()
+        generateFile(ccbDepositesMatrix, self.resultFilePath + os.path.sep + "deposits.txt")
         
         alipayCleaner = AlipayAccountCleaner(dataFilesPath + os.path.sep + "alipay")
         alipayMatrix = alipayCleaner.clean()   
         generateFile(alipayMatrix, self.resultFilePath + os.path.sep + "alipay.txt")
         
-        conbine1 = combineCreditAndAlipay(creditMatrix, alipayMatrix)
+        conbine1 = combineCCBAndAlipay(ccbCreditMatrix, alipayMatrix)
         generateFile(conbine1, self.resultFilePath + os.path.sep + "conbine1.txt")
         
-        analyzer = BusinessAnalyzer()
-        result = analyzer.calculate(conbine1)
+        conbine2 = combineCCBAndAlipay(ccbDepositesMatrix, alipayMatrix)
+        generateFile(conbine2, self.resultFilePath + os.path.sep + "conbine2.txt")
         
+        analyzer = BusinessAnalyzer()
+        ccbCredit = addPointedColumn(analyzer.calculate(conbine1), 'credit')
+        ccbDeposites = addPointedColumn(analyzer.calculate(conbine2), 'deposites')
+        
+        result = mergeMatrixsAandB(ccbCredit, ccbDeposites[1: len(ccbDeposites)])
         generateFile(result, self.resultFilePath + os.path.sep + "result.txt")
+        
         sqliteHelper = SQLiteHelper()
         sqliteHelper.initiateDatabase()
         sqliteHelper.batchInsert(result[1: len(result)])

@@ -1,5 +1,6 @@
 CREATE TABLE CREDIT( 
   id               INTEGER   PRIMARY KEY autoincrement,
+  source           TEXT      NOT NULL,
   transaction_date DATETIME  NOT NULL,
   bookkeeping_date DATETIME  NOT NULL,
   card_id          TEXT      NOT NULL,
