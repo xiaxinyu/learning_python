@@ -6,9 +6,10 @@ Created on 2018.1.25
 '''
 from account.helper.FileHelper import generateFile
 from account.helper.FileHelper import getFiles
-from account.helper.StringHelper import isNotEmpty
 from account.helper.FileHelper import getAllLines
 from account.cleaner.Cleaner import Cleaner
+from account.helper.StringHelper import parseDateTime
+from account.helper.StringHelper import formatDateTime
 import numpy as np
 
 
@@ -73,25 +74,61 @@ class CCBCreditCleaner(Cleaner):
             texts[fileItem.fileName] = dataLines
         return texts
     
+    def formatDate(self, dates, times):
+        for (index, date) in enumerate(dates):
+            if index == 0:
+                continue
+            dates[index] = formatDateTime(parseDateTime(date + times[index]))
+        return dates
+    
+    def fomatMoney(self, incomes, outcomes):
+        for (index, income) in enumerate(incomes):
+            if index == 0:
+                continue
+            if len(income) > 0:
+                incomes[index] = float(income)
+            else:
+                outcome = outcomes[index]
+                if len(outcome) > 0:
+                    incomes[index] = float(outcome)
+                else:
+                    incomes[index] = 0
+        return incomes
+    
+    def formatBlance(self, blances):
+        for (index, blance) in enumerate(blances):
+            if index == 0:
+                continue
+            if len(blance) > 0:
+                blances[index] = float(blance)
+            else:
+                blances[index] = 0
+        return blances
+    
+    def formatDigest(self, locations, oppositeAccounts, oppisiteNames, digests):
+        for (index, digest) in enumerate(digests):
+            if index == 0:
+                continue
+            digests[index] = locations[index] + "@@" + oppositeAccounts[index] + "@@" + oppisiteNames[index] + "@@" + digest
+        return digests
+            
     def clean(self):
         rowDatas = super().cleanHeader(self.getAllDataLines())
         if rowDatas is None or len(rowDatas) <= 0:
             return
-        t = np.array(rowDatas)
-        account = np.full(len(rowDatas), self.accountNumber)
-        result = np.c_[t,account]
-        a = np.array_str(result[:,0])
-        b = np.array_str(result[:,2])
-        summer = np.append(a,b)
-        print(a)
-        print(b)
-        print(summer)
-        
-                
+        array = np.array(rowDatas)       
+        c_a = self.formatDate(array[:, 0], array[:, 2])
+        c_b = self.formatDate(array[:, 1], array[:, 2])
+        c_c = np.full(len(rowDatas), self.accountNumber)
+        c_d = self.fomatMoney(array[:, 4], array[:, 5]) 
+        c_e = array[:, 9]
+        c_f = self.formatBlance(array[:, 6])
+        c_g = self.formatDigest(array[:, 3], array[:, 7], array[:, 8], array[:, 10])
+        result = np.c_[c_a, c_b, c_c, c_d, c_e, c_f, c_g]
+        return result.tolist()
         
     
 cleaner = CCBCreditCleaner("d:\\test\\deposits")
 result = cleaner.clean()
-#generateFile(result, "d:\\result\\deposits.txt")
-
+generateFile(result, "d:\\result\\deposits.txt")
 

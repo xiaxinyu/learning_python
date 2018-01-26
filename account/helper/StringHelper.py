@@ -9,8 +9,11 @@ import datetime
 def isNotEmpty(charactor):   
     return charactor and len(charactor.strip()) > 0
 
-def parseDate(strDate):
-    return datetime.datetime.strptime(strDate, "%Y%m%d")
+def parseDate(strDate, fmt='%Y%m%d'):
+    return datetime.datetime.strptime(strDate, fmt)
 
-def formatDateTime(date):
-    return date.strftime("%Y-%m-%d %H:%M:%S")
+def parseDateTime(strDate, fmt='%Y%m%d%H:%M:%S'):
+    return datetime.datetime.strptime(strDate, fmt)
+
+def formatDateTime(date, fmt='%Y-%m-%d %H:%M:%S'):
+    return date.strftime(fmt)
