@@ -7,6 +7,8 @@ Created on 2018.1.23
 import os
 import json
 import codecs
+import copy
+from account.helper.StringHelper import textSeparator
 
 
 class ConsumptionAnalyzer(object):
@@ -67,20 +69,25 @@ class ConsumptionAnalyzer(object):
     
     def getConsumptionByTransfer(self, text, transferConsumption):
         result = None
-        if '支付宝-' not in text:
-            return result
-        if len(text) == 6 or len(text) == 7:
-            result = transferConsumption            
-            result['keyword'] = text
+        if text:
+            if '支付宝-' not in text:
+                return result
+            if len(text) == 6 or len(text) == 7:
+                result = transferConsumption
+                result['keyword'] = text
         return result
     
     def getConsumptionType(self, text):
         defaultConsumption = self.getDefaultConsumption(self.ctData)
-        transferConsumption = self.getPointedConsumption('转出', self.ctData['rows'])
+        transferConsumption = self.getPointedConsumption('转账', self.ctData['rows'])
         
         result = self.getConsumptionByKeyWord(text, self.ctData)
         if result is None:
-            result = self.getConsumptionByTransfer(text, transferConsumption)
+            items = text.split(textSeparator)
+            for item in items:
+                result = self.getConsumptionByTransfer(item, transferConsumption)
+                if result is not None:
+                    break
         
         if result is None:
             result = defaultConsumption

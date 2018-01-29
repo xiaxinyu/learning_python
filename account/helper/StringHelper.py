@@ -6,6 +6,8 @@ Created on 2018.1.12
 '''
 import datetime
 
+textSeparator='@@'
+
 def isNotEmpty(charactor):   
     return charactor and len(charactor.strip()) > 0
 
