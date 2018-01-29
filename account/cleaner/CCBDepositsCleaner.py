@@ -12,7 +12,6 @@ from account.helper.StringHelper import parseDateTime
 from account.helper.StringHelper import formatDateTime
 import numpy as np
 
-
 class CCBDepositsCleaner(Cleaner):
     filterHeaderKeyWord = '记账日'
     filterAccountKeyWord = '账　　号'
@@ -106,13 +105,14 @@ class CCBDepositsCleaner(Cleaner):
         return blances
     
     def formatDigest(self, locations, oppositeAccounts, oppisiteNames, digests):
-        for (index, digest) in enumerate(digests):
+        result = []
+        for (index, digest) in enumerate(digests): 
             if index == 0:
+                result.append(digest)
                 continue
-            allStr = ''.join([locations[index],"@@",oppositeAccounts[index],"@@",oppisiteNames[index],"@@",digest])
-            print(allStr)
-            digests[index] = allStr
-        return digests
+            allStr = ''.join([str(locations[index]),"@@",str(oppositeAccounts[index]),"@@",str(oppisiteNames[index]),"@@", str(digest)])
+            result.append(allStr)
+        return result
             
     def clean(self):
         rowDatas = super().cleanHeader(self.getAllDataLines())
@@ -126,6 +126,16 @@ class CCBDepositsCleaner(Cleaner):
         c_e = array[:, 9]
         c_f = self.formatBlance(array[:, 6])
         c_g = self.formatDigest(array[:, 3], array[:, 7], array[:, 8], array[:, 10])
-        result = np.c_[c_a, c_b, c_c, c_d, c_e, c_f, c_g]
-        return result.tolist()
+        result = []
+        for index in range(0,len(rowDatas)):
+            rowData = []
+            rowData.append(c_a[index])
+            rowData.append(c_b[index])
+            rowData.append(c_c[index])
+            rowData.append(c_d[index])
+            rowData.append(c_e[index])
+            rowData.append(c_f[index])
+            rowData.append(c_g[index])
+            result.append(rowData)
+        return result
 
