@@ -7,9 +7,7 @@ Created on 2018.1.23
 import os
 import json
 import codecs
-import copy
 from account.helper.StringHelper import textSeparator
-
 
 class ConsumptionAnalyzer(object):
     encoding = 'utf-8'
@@ -67,27 +65,47 @@ class ConsumptionAnalyzer(object):
                 break
         return result
     
-    def getConsumptionByTransfer(self, text, transferConsumption):
-        result = None
+    def getTransferType(self, text):
         if text:
             if '支付宝-' not in text:
-                return result
+                return False
             if len(text) == 6 or len(text) == 7:
-                result = transferConsumption
-                result['keyword'] = text
-        return result
+                return True
+        return False
     
-    def getConsumptionType(self, text):
+    def getRentType(self, text, money):
+        if money == 3200 or money == 3500:
+            if '王正根' in text or '聂凤琼' in text:
+                return True
+        return False
+    
+    def getWishType(self, text, money):
+        if money == 205.13:
+            if '支付宝(中国)网络技术有限公@@@@@@消费' in text:
+                return True
+        return False 
+    
+    def getConsumptionType(self, text, money):
         defaultConsumption = self.getDefaultConsumption(self.ctData)
         transferConsumption = self.getPointedConsumption('转账', self.ctData['rows'])
+        rentConsumption = self.getPointedConsumption('房租', self.ctData['rows'])
+        wishConsumption = self.getPointedConsumption('心愿储蓄', self.ctData['rows'])
         
         result = self.getConsumptionByKeyWord(text, self.ctData)
+        flag = False
         if result is None:
-            items = text.split(textSeparator)
-            for item in items:
-                result = self.getConsumptionByTransfer(item, transferConsumption)
-                if result is not None:
-                    break
+            flag = self.getTransferType(text)
+            if flag is True:
+                result = transferConsumption
+            flag = self.getRentType(text, money)
+            if flag is True:
+                result = rentConsumption
+            flag = self.getWishType(text, money)
+            if flag is True:
+                result = wishConsumption               
+        
+        if flag is True:
+            result['keyword'] = text
         
         if result is None:
             result = defaultConsumption

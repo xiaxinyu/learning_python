@@ -17,6 +17,7 @@ class BusinessAnalyzer(object):
     touPath = os.path.join(BASE_DIR, 'type-of-use.json')
     ctPath = os.path.join(BASE_DIR, 'consumption-type.json')
     descriptionColumnIndex = 6
+    transactionColumnIndex = 3
     headerRowIndex = 0 
     disbursementNewColumn1 = '支付渠道名称'
     disbursementNewColumn2 = '支付渠道编码' 
@@ -78,7 +79,8 @@ class BusinessAnalyzer(object):
             tou = self.getOrdinaryType(description, self.touData)
             line.append(tou['name'])
             line.append(tou['value'])
-            ct = self.consumptionAnalyzer.getConsumptionType(description)
+            money = line[self.transactionColumnIndex]
+            ct = self.consumptionAnalyzer.getConsumptionType(description, money)
             if ct is not None:
                 line.append(ct['name'])
                 line.append(ct['value'])

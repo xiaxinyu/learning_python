@@ -5,6 +5,7 @@ Created on 2018.1.12
 @contact: summer_west2010@126.com
 '''
 import datetime
+import uuid
 
 textSeparator='@@'
 
@@ -19,3 +20,6 @@ def parseDateTime(strDate, fmt='%Y%m%d%H:%M:%S'):
 
 def formatDateTime(date, fmt='%Y-%m-%d %H:%M:%S'):
     return date.strftime(fmt)
+
+def getUUID():
+    return uuid.uuid1()

@@ -14,6 +14,7 @@ import os
 from account.Combiner import combineCCBAndAlipay
 from account.helper.MatrixHelper import addPointedColumn
 from account.helper.MatrixHelper import mergeMatrixsAandB
+from account.db.OracleHelper import OrderHelper
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -54,6 +55,9 @@ class Account(object):
         sqliteHelper = SQLiteHelper()
         sqliteHelper.initiateDatabase()
         sqliteHelper.batchInsert(result[1: len(result)])
+        
+#         oracleHelper = OrderHelper()
+#         oracleHelper.batchInsert(result[1: len(result)])
         
 if __name__ == '__main__':
 #     dataFilesPath = '/Users/summer/Desktop/account'
