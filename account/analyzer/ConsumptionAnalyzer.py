@@ -74,13 +74,18 @@ class ConsumptionAnalyzer(object):
         return False
     
     def getRentType(self, text, money):
-        if money == 3200 or money == 3500:
+        new_money = int(float(money))
+        if  new_money == 3200 or new_money == 3500:
             if '王正根' in text or '聂凤琼' in text:
+                return True
+            if '微信转账' in text and '消费' in text:
+                return True
+            if '财付通' in text and '消费' in text:
                 return True
         return False
     
     def getWishType(self, text, money):
-        if money == 205.13:
+        if float(money) == 205.13:
             if '支付宝(中国)网络技术有限公@@@@@@消费' in text:
                 return True
         return False 
@@ -91,22 +96,26 @@ class ConsumptionAnalyzer(object):
         rentConsumption = self.getPointedConsumption('房租', self.ctData['rows'])
         wishConsumption = self.getPointedConsumption('心愿储蓄', self.ctData['rows'])
         
-        result = self.getConsumptionByKeyWord(text, self.ctData)
-        flag = False
-        if result is None:
-            flag = self.getTransferType(text)
-            if flag is True:
-                result = transferConsumption
-            flag = self.getRentType(text, money)
-            if flag is True:
-                result = rentConsumption
-            flag = self.getWishType(text, money)
-            if flag is True:
-                result = wishConsumption               
-        
+        result = None
+        flag = self.getRentType(text, money)
         if flag is True:
+            result = rentConsumption
             result['keyword'] = text
+            return result
+        flag = self.getWishType(text, money)
+        if flag is True:
+            result = wishConsumption
+            result['keyword'] = text
+            return result
+        flag = self.getTransferType(text)
+        if flag is True:
+            result = transferConsumption
+            result['keyword'] = text
+            return result
+        
+        result = self.getConsumptionByKeyWord(text, self.ctData)
         
         if result is None:
             result = defaultConsumption
+            result['keyword'] = 'None'
         return result

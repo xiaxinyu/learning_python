@@ -54,7 +54,6 @@ class BusinessAnalyzer(object):
         for key in data['rows']:
             if key["name"] in text:
                 result = key
-                break
         return result
     
     def calculate(self, lines=[]):

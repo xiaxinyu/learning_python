@@ -18,5 +18,10 @@
 		"name": "利息",
 		"value": 4,
 		"default": false
+	},
+	{
+		"name": "工资",
+		"value": 5,
+		"default": false
 	}
 ]

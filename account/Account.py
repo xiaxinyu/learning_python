@@ -56,8 +56,8 @@ class Account(object):
         sqliteHelper.initiateDatabase()
         sqliteHelper.batchInsert(result[1: len(result)])
         
-#         oracleHelper = OrderHelper()
-#         oracleHelper.batchInsert(result[1: len(result)])
+        oracleHelper = OrderHelper()
+        oracleHelper.batchInsert(result[1: len(result)])
         
 if __name__ == '__main__':
 #     dataFilesPath = '/Users/summer/Desktop/account'
