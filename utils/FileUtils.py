@@ -7,8 +7,10 @@ Created on 2018.1.5
 import os
 import logging
 import codecs
+import pickle
 
-logging.basicConfig(filename='d:\\FileJoiner.log',level=logging.DEBUG,)
+logging.basicConfig(filename='d:\\FileJoiner.log', level=logging.DEBUG, )
+
 
 class FileItem(object):
 
@@ -16,21 +18,21 @@ class FileItem(object):
         self.fn = fn
         self.ap = ap
 
-    
+
 class TextItem(object):
 
     def __init__(self, fn, lines):
         self.fn = fn
         self.lines = lines
 
-        
+
 class Line(object):
 
     def __init__(self, h, text):
         self.h = h
         self.text = text
 
-        
+
 def getFiles(directoryPath):
     r = []
     fs = os.listdir(directoryPath)
@@ -43,7 +45,7 @@ def getFiles(directoryPath):
         r.append(FileItem(f, ap))
     return r
 
-    
+
 def readFile(fi):
     try:
         '''check whether file exist '''
@@ -60,49 +62,57 @@ def readFile(fi):
             rows.append(each_line.strip())
         return TextItem(fi.fn, rows)
     except Exception as e:
-        logging.exception('Reading file has error. [' +  str(e) +']')
+        logging.exception('Reading file has error. [' + str(e) + ']')
     finally:
         if 'file' in locals():
-            file.close() 
+            file.close()
     return None
 
-    
+
 def joinFiles(path, txtObjs, showFn=True):
     try:
         if txtObjs is None or len(txtObjs) <= 0:
-            return 
+            return
         if os.path.exists(path):
             os.remove(path)
         lines = []
         for txtObj in txtObjs:
             for row in txtObj.lines:
-                lines.append(Line(txtObj.fn, row)) 
-        
-        file = open(path, 'w')   
+                lines.append(Line(txtObj.fn, row))
+
+        file = open(path, 'w')
         for l in lines:
             if showFn:
-                file.write(l.h + ':' + l.text+'\r\n')
+                file.write(l.h + ':' + l.text + '\r\n')
             else:
-                file.write(l.text+'\r\n')
+                file.write(l.text + '\r\n')
     except Exception as e:
-        logging.exception('Reading file has error. [' +  str(e) +']')
-    finally :
+        logging.exception('Reading file has error. [' + str(e) + ']')
+    finally:
         if 'file' in locals():
-            file.close()     
+            file.close()
 
-        
+
 def merge(sp, dp, showFn):
     items = getFiles(sp)
     if items is None or len(items) <= 0:
-        return    
+        return
     texts = []
     for item in items:
         text = readFile(item)
         if text is not None:
-            texts.append(text)                
-    joinFiles(dp, texts, showFn)            
+            texts.append(text)
+    joinFiles(dp, texts, showFn)
 
-            
-if __name__ == '__main__':  
+def getData(path):
+    if not os.path.exists(path):
+        raise FileNotFoundError('can not find data file')
+    with open(path, 'rb') as savedData:
+        data = pickle.load(savedData)
+    if not data:
+        raise Exception('can not load anything')
+    return data
+
+
+if __name__ == '__main__':
     merge('D:\\test', 'D:\\TEST.txt', True)
-    
